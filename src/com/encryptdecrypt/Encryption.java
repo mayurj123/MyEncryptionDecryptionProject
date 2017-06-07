@@ -10,7 +10,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.net.ssl.KeyManagerFactory;
 
 public class Encryption {
 
@@ -37,7 +36,7 @@ public class Encryption {
 				desCipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
 				byte[] textEncrypted = desCipher.doFinal(textToBeEncryptedInByte);
-				System.out.println("Encrypted Text Is : " + textEncrypted);
+				System.out.println("Encrypted Text Is : " + new String(textEncrypted));
 
 				// Now Initialize cipher for Decryption
 				desCipher.init(Cipher.DECRYPT_MODE, secretKey);
