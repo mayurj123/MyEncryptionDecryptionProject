@@ -11,7 +11,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
-public class Encryption {
+class Encryption {
 
 	public static void main(String[] args) {
 
