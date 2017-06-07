@@ -16,7 +16,7 @@ public class EncryptDecrypt {
 		SecretKey secretKey = keyGenerator.generateKey();
 		cipher = Cipher.getInstance("DESede");
 
-		String plainText = "Secure this Key";
+		String plainText = "Come on over for soda!";
 		System.out.println("Text Before Encryption: " + plainText);
 
 		byte[] plainTextByte = plainText.getBytes("UTF8");
