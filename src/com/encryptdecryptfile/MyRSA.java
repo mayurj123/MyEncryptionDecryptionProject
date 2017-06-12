@@ -1,20 +1,53 @@
 package com.encryptdecryptfile;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.KeyFactory;
-import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 public class MyRSA {
+	// private Socket s;
+	SSLSocket sslsocket;
+	SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+
+	public MyRSA(String host, int port, String encryptedDataFilePath) {
+		try {
+			// s = new Socket(host, port);
+			sslsocket = (SSLSocket) sslsocketfactory.createSocket("localhost", port);
+			sendFile(encryptedDataFilePath);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendFile(String file) throws IOException {
+		DataOutputStream dos = new DataOutputStream(sslsocket.getOutputStream());
+		FileInputStream fis = new FileInputStream(file);
+		byte[] buffer = new byte[4096];
+
+		while (fis.read(buffer) > 0) {
+			dos.write(buffer);
+		}
+
+		fis.close();
+		dos.close();
+	}
+
+	public MyRSA() {
+	}
+
+	@SuppressWarnings("resource")
 	public static void main(String[] args) throws Exception {
 		MyRSA rsa = new MyRSA();
-		String aesKeyFilePath = "D:\\encryptdecryptdata\\fileToBeEncrypted1.txt";
+		String aesKeyFilePath = "D:\\encryptdecryptdata\\fileToBeEncrypted.txt";
 		File f = new File(aesKeyFilePath);
 
 		byte[] bytes = new byte[(int) f.length()];
@@ -25,20 +58,8 @@ public class MyRSA {
 		FileOutputStream fos = new FileOutputStream(new File(encryptedDataFilePath));
 		fos.write(encryptedData);
 		fos.close();
-/*
-		String aesKeyFilePath1 = "D:\\encryptdecryptdata\\encryptedDataFile.txt";
-		File f1 = new File(aesKeyFilePath);
 
-		byte[] bytes1 = new byte[(int) f1.length()];
-		new FileInputStream(f).read(bytes1);
-		byte[] decryptedData = rsa.decrypt(bytes1);
-		System.out.println("hiii");
-
-		String decryptedDataFilePath = "D:\\encryptdecryptdata\\decryptedDataFile.txt";
-		FileOutputStream fos2 = new FileOutputStream(new File(decryptedDataFilePath));
-		fos2.write(decryptedData);
-		fos2.close();*/
-
+		new MyRSA("localhost", 1988, encryptedDataFilePath);
 	}
 
 	public byte[] encrypt(byte[] data) throws Exception {
@@ -49,15 +70,6 @@ public class MyRSA {
 		decryptedData = cipher.doFinal(data);
 		return decryptedData;
 	}
-	/*public byte[] decrypt(byte[] data) throws Exception {
-		Cipher cipher;
-		byte[] decryptedData = null;
-		cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-		cipher.init(Cipher.DECRYPT_MODE, loadPrivateKey());
-		decryptedData = cipher.doFinal(data);
-		System.out.println("Private Key Generated " + new String(decryptedData));
-		return decryptedData;
-	}*/
 
 	private PublicKey loadPublicKey() throws Exception {
 		String publicKeyFilePath = "D://encryptdecryptdata//publicKey.txt";
@@ -71,19 +83,4 @@ public class MyRSA {
 		PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
 		return publicKey;
 	}
-
-	
-
-	/*private PrivateKey loadPrivateKey() throws Exception {
-		String privateKeyFilePath = "D://encryptdecryptdata//privateKey.txt";
-		File filePrivateKey = new File(privateKeyFilePath);
-		FileInputStream fis = new FileInputStream(filePrivateKey);
-		byte[] encodedPrivateKey = new byte[fis.available()];
-		fis.read(encodedPrivateKey);
-		fis.close();
-		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-		PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(encodedPrivateKey);
-		PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
-		return privateKey;
-	}*/
 }
